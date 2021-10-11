@@ -68,3 +68,23 @@ For a one unit increase in CSCORE_B, the log odds of being good loan increases b
 Having occ_state by p versus occ_state by others , changes the log odds of being good loan by 1.123.
 ...
 P-values for rest variables all greater 0.05, they are not significant.
+
+
+
+```{r}
+data2 %>%
+  ggplot(aes(x = LAST_STAT, y = oltv, color = LAST_STAT)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Loan Type", x = "", y = "oltv")
+```
+
+```{r}
+data3 %>%
+  ggplot(aes(x = as.factor(good_loan), y = oltv, color = as.factor(good_loan))) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Loan Type", x = "", y = "oltv")
+```
+
+
