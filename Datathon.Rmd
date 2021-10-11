@@ -58,13 +58,13 @@ plot(x=data3$oltv, y=data3$ocltv)
 
 ```{r}
 #model<- glm(good_loan ~ oltv + dti + CSCORE_B, data=data3, family=binomial(link="logit"))
-model2<- lme4::glmer(good_loan ~ oltv  + dti + CSCORE_B + FTHB_FLG + relo_flg + occ_stat + NUM_UNIT + (1|msa), data=data3,family=binomial(link="logit")) #too much correlation for oltv,ocltv and CSCORE_B,CSCORE_C
+model2<- lme4::glmer(good_loan ~ oltv  + dti + CSCORE_B + FTHB_FLG + purpose + relo_flg + occ_stat + NUM_UNIT + (1|msa), data=data3,family=binomial(link="logit")) #too much correlation for oltv,ocltv and CSCORE_B,CSCORE_C
 summary(model2)
 ```
 
-For a one unit increase in oltv, the log odds of being good loan decreases by 0.038
-For a one unit increase in dti, the log odds of being good loan decreases by 0.0224
-For a one unit increase in oltv, the log odds of being good loan increases by 0.0175
-Having relo_flg by yes versus relo_flg by no , changes the log odds of being good loan by 1.165.
-Have occ_state by p...
+For a one unit increase in oltv, the log odds of being good loan decreases by 0.0468
+For a one unit increase in dti, the log odds of being good loan decreases by 0.0231
+For a one unit increase in CSCORE_B, the log odds of being good loan increases by 0.0175
+Having occ_state by p versus occ_state by others , changes the log odds of being good loan by 1.123.
+...
 P-values for rest variables all greater 0.05, they are not significant.
