@@ -52,7 +52,7 @@ summary(ok_loan)
 The mean of oltv for ok-loan is 74.29 compared to default_loan is 82.84
 
 ```{r}
-plot(x=oltv, y=ocltv, data=data3)
+plot(x=data3$oltv, y=data3$ocltv)
 ```
 
 
