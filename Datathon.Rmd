@@ -1,0 +1,70 @@
+---
+title: "Datathon"
+author: "Ruichen Lu"
+date: "10/10/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+
+```{r, get data}
+library(tidyverse)
+library(tidyr)
+library(stringi)
+data1 <- read.csv("~/Desktop/dataset_Fall 2021.csv", header = TRUE)
+```
+
+
+```{r}
+data2 <- data1[which(!is.na(data1$dti) & !is.na(data1$CSCORE_B) & !is.na(data1$CSCORE_C) & !is.na(data1$FTHB_FLG) & !is.na(data1$LAST_RT) & !is.na(data1$num_bo)), ] #remove NA
+
+#sum(with(data2, LAST_STAT=="D"|LAST_STAT=="F"|LAST_STAT=="S"|LAST_STAT=="R"|LAST_STAT=="N"|LAST_STAT=="T"))
+#sum(with(data2, LAST_STAT=="C"|LAST_STAT=="L"|LAST_STAT=="P"))
+
+default_loan <- data2 %>%
+  filter(grepl('F|S|D|R|N|T', LAST_STAT)) #filter default loan
+ok_loan <- data2 %>%
+  filter(grepl('C|L|P', LAST_STAT)) 
+
+ok_loan <- ok_loan %>%
+  mutate(good_loan=1)
+
+data3 <- full_join(data2, ok_loan)
+data3$good_loan[is.na(data3$good_loan)] <- 0 #add a binary variable as the response
+
+```
+
+```{r}
+summary(default_loan)
+```
+
+
+```{r}
+summary(ok_loan)
+```
+
+The mean of oltv for ok-loan is 74.29 compared to default_loan is 82.84
+
+```{r}
+plot(x=oltv, y=ocltv, data=data3)
+```
+
+
+```{r}
+#model<- glm(good_loan ~ oltv + dti + CSCORE_B, data=data3, family=binomial(link="logit"))
+model2<- lme4::glmer(good_loan ~ oltv  + dti + CSCORE_B + FTHB_FLG + relo_flg + occ_stat + NUM_UNIT + (1|msa), data=data3,family=binomial(link="logit")) #too much correlation for oltv,ocltv and CSCORE_B,CSCORE_C
+summary(model2)
+```
+
+For a one unit increase in oltv, the log odds of being good loan decreases by 0.038
+For a one unit increase in dti, the log odds of being good loan decreases by 0.0224
+For a one unit increase in oltv, the log odds of being good loan increases by 0.0175
+Having relo_flg by yes versus relo_flg by no , changes the log odds of being good loan by 1.165.
+Have occ_state by p...
+P-values for rest variables all greater 0.05, they are not significant.
