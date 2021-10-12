@@ -164,6 +164,158 @@ knitr::kable(data4.ave,align="lr")
 knitr::kable(data5.count, align="lcr") 
 ```
 
+```{r LOAN SUCCESS vs. mi_pct, warning=FALSE, message=FALSE}
+data3 %>%
+  ggplot(aes(x = as.factor(good_loan), y = mi_pct, color = as.factor(good_loan))) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Loan Success vs. Mortgage Insurance Percentage", x = "Mortgage Insurance Percentage", y = "Count") +
+  scale_color_discrete(name="Loan Success") +
+  ggeasy::easy_center_title()
+```
+
+```{r LOAN SUCCESS vs. num_unit, warning=FALSE, message=FALSE}
+data3 %>%
+  ggplot(aes(x = as.factor(good_loan), y = log(NUM_UNIT), color = as.factor(good_loan))) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Loan Success vs. Number of Units", x = "Number of Units", y = "Count") +
+  scale_color_discrete(name="Loan Success") +
+  ggeasy::easy_center_title()
+```
+
+```{r LOAN SUCCESS & FTHB_FLAG}
+data3 %>% 
+  group_by(FTHB_FLG,good_loan) %>% 
+  summarise(count=n()) %>% 
+  ggplot(aes(fill = as.factor(good_loan), y = count, x = as.factor(FTHB_FLG))) +
+  geom_bar(position="dodge",stat="identity") +
+  theme_minimal() +
+  labs(title = "Loan Success vs. First Time Home Buyers Flag", x = "First Time Home Buyers Flag", y = "Count") +
+  scale_fill_discrete(name="Loan Success") +
+  ggeasy::easy_center_title()
+```
+
+```{r LOAN SUCCESS & purpose}
+# need to rename legends: C=Cash out refinance, R=Refinance, P=Purchase, U=Refinance-not specified
+data3 %>% 
+  group_by(purpose,good_loan) %>% 
+  summarise(count=n()) %>% 
+  ggplot(aes(fill = as.factor(good_loan), y = count, x = as.factor(purpose))) +
+  geom_bar(position="stack",stat="identity") +
+  theme_minimal() +
+  labs(title = "Loan Success vs. Loan Purpose", x = "Loan Purpose", y = "Count", ) +
+  scale_fill_discrete(name="Loan Success") +
+  ggeasy::easy_center_title()
+```
+
+```{r LOAN SUCCESS & relo_flg}
+data3 %>% 
+  group_by(relo_flg,good_loan) %>% 
+  summarise(count=n()) %>% 
+  ggplot(aes(fill = as.factor(good_loan), y = count, x = as.factor(relo_flg))) +
+  geom_bar(position="stack",stat="identity") +
+  theme_minimal() +
+  labs(title = "Loan Success vs. Relocation Mortgage Indicator", x = "Relocation Mortgage Indicator", y = "Count") +
+  scale_fill_discrete(name="Loan Success") +
+  ggeasy::easy_center_title()
+```
+
+```{r LOAN SUCCESS & occ_status}
+data3 %>% 
+  group_by(occ_stat,good_loan) %>% 
+  summarise(count=n()) %>% 
+  ggplot(aes(fill = as.factor(good_loan), y = count, x = as.factor(occ_stat))) +
+  geom_bar(position="stack",stat="identity") +
+  theme_minimal() +
+  labs(title = "Loan Success vs. Occupancy Status", x = "Occupancy Status", y = "Count") +
+  scale_fill_discrete(name="Loan Success") +
+  ggeasy::easy_center_title()
+```
+
+```{r LOAN SUCCESS & PROP_TYP}
+data3 %>% 
+  group_by(PROP_TYP,good_loan) %>% 
+  summarise(count=n()) %>% 
+  ggplot(aes(fill = as.factor(good_loan), y = count, x = as.factor(PROP_TYP))) +
+  geom_bar(position="stack",stat="identity") +
+  theme_minimal() +
+  labs(title = "Loan Success vs. Property Type", x = "Property Type", y = "Count") +
+  scale_fill_discrete(name="Loan Success") +
+  ggeasy::easy_center_title()
+```
+
+```{r orig_amt vs. mi_pct, warning=FALSE, message=FALSE}
+data3[!is.na(data3$mi_pct),] %>%
+  ggplot(aes(x = as.factor(mi_pct), y = orig_amt)) +
+  geom_boxplot(na.rm = TRUE) +
+  theme_minimal() +
+  labs(title = "Original UPB vs. Mortgage Insurance Percentage", x = "Mortgage Insurance Percentage", y = "Original UPB")
+  ggeasy::easy_center_title()
+```
+
+```{r orig_amt vs. num_unit, warning=FALSE, message=FALSE}
+data3 %>%
+  ggplot(aes(x = as.factor(NUM_UNIT), y = orig_amt, color = as.factor(NUM_UNIT))) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Original UPB vs. Number of Units", x = "Number of Units", y = "Original UPB") +
+  scale_color_discrete(name="Number of Units") +
+  ggeasy::easy_center_title()
+```
+
+```{r orig_amt & FTHB_FLAG}
+data3 %>%
+  ggplot(aes(x = as.factor(FTHB_FLG), y = orig_amt, color = as.factor(FTHB_FLG))) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Original UPB vs. First Time Home Buyers Flag", x = "First Time Home Buyers Flag", y = "Original UPB") +
+  scale_color_discrete(name="First Time Home Buyers Flag") +
+  ggeasy::easy_center_title()
+```
+
+```{r orig_amt & purpose}
+# need to rename legends: C=Cash out refinance, R=Refinance, P=Purchase, U=Refinance-not specified
+data3 %>%
+  ggplot(aes(x = as.factor(purpose), y = orig_amt, color = as.factor(purpose))) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Original UPB vs. Loan Purpose", x = "Loan Purpose", y = "Original UPB") +
+  scale_color_discrete(name="Loan Purpose") +
+  ggeasy::easy_center_title()
+```
+
+```{r orig_amt & relo_flg}
+data3 %>%
+  ggplot(aes(x = as.factor(relo_flg), y = orig_amt, color = as.factor(relo_flg))) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Original UPB vs. Relocation Mortgage Indicator", x = "Relocation Mortgage Indicator", y = "Original UPB") +
+  scale_color_discrete(name="Relocation Mortgage Indicator") +
+  ggeasy::easy_center_title()
+```
+
+```{r orig_amt & occ_status}
+data3 %>%
+  ggplot(aes(x = as.factor(occ_stat), y = orig_amt, color = as.factor(occ_stat))) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Original UPB vs. Occupancy Status", x = "Occupancy Status", y = "Original UPB") +
+  scale_color_discrete(name="Occupancy Status") +
+  ggeasy::easy_center_title()
+```
+
+```{r orig_amt & PROP_TYP}
+data3 %>%
+  ggplot(aes(x = as.factor(PROP_TYP), y = orig_amt, color = as.factor(PROP_TYP))) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Original UPB vs. Property Type", x = "Property Type", y = "Original UPB") +
+  scale_color_discrete(name="Property Type") +
+  ggeasy::easy_center_title()
+```
+
+
 
 
 
