@@ -22,7 +22,7 @@ data1 <- read.csv("~/Desktop/dataset_Fall 2021.csv", header = TRUE)
 
 
 ```{r}
-data2 <- data1[which(!is.na(data1$dti) & !is.na(data1$CSCORE_B) & !is.na(data1$CSCORE_C) & !is.na(data1$FTHB_FLG) & !is.na(data1$LAST_RT) & !is.na(data1$num_bo)), ] #remove NA
+data2 <- data1[which(!is.na(data1$dti) & !is.na(data1$CSCORE_B) & !is.na(data1$CSCORE_C) & !is.na(data1$FTHB_FLG) & !is.na(data1$LAST_RT) & !is.na(data1$num_bo)),] #remove NA
 
 #sum(with(data2, LAST_STAT=="D"|LAST_STAT=="F"|LAST_STAT=="S"|LAST_STAT=="R"|LAST_STAT=="N"|LAST_STAT=="T"))
 #sum(with(data2, LAST_STAT=="C"|LAST_STAT=="L"|LAST_STAT=="P"))
@@ -58,33 +58,114 @@ plot(x=data3$oltv, y=data3$ocltv)
 
 ```{r}
 #model<- glm(good_loan ~ oltv + dti + CSCORE_B, data=data3, family=binomial(link="logit"))
-model2<- lme4::glmer(good_loan ~ oltv  + dti + CSCORE_B + FTHB_FLG + purpose + relo_flg + occ_stat + NUM_UNIT + (1|msa), data=data3,family=binomial(link="logit")) #too much correlation for oltv,ocltv and CSCORE_B,CSCORE_C
+model2<- lme4::glmer(good_loan ~ oltv  + dti + CSCORE_B + FTHB_FLG + purpose + relo_flg + occ_stat + NUM_UNIT + orig_rt + (1|msa), data=data3,family=binomial(link="logit")) #too much correlation for oltv,ocltv and CSCORE_B,CSCORE_C
 summary(model2)
 ```
 
-For a one unit increase in oltv, the log odds of being good loan decreases by 0.0468
-For a one unit increase in dti, the log odds of being good loan decreases by 0.0231
-For a one unit increase in CSCORE_B, the log odds of being good loan increases by 0.0175
-Having occ_state by p versus occ_state by others , changes the log odds of being good loan by 1.123.
+For a one unit increase in oltv, the log odds of being good loan decreases by 0.0465
+For a one unit increase in dti, the log odds of being good loan decreases by 0.0228
+For a one unit increase in CSCORE_B, the log odds of being good loan increases by 0.01168
+Having occ_state by p versus occ_state by others , changes the log odds of being good loan by 1.102.
 ...
 P-values for rest variables all greater 0.05, they are not significant.
 
 
-
 ```{r}
-data2 %>%
+library(beanplot)
+data3 %>%
   ggplot(aes(x = LAST_STAT, y = oltv, color = LAST_STAT)) +
   geom_boxplot() +
   theme_minimal() +
-  labs(title = "Loan Type", x = "", y = "oltv")
+  labs(title = "Loan Type vs. OLTV", x = "Loan Type", y = "Original Loan to Value Ratio")+
+  scale_color_discrete(name="Loan Type") + 
+  ggeasy::easy_center_title()
+
+
+#beanplot(oltv~LAST_STAT, data=data3, ll=0.01)
+# Beanplot is not beautiful
+```
+
+```{r}
+data3 <- data3 %>%
+  mutate(good_loan=ifelse(good_loan==0, "Failed", "Success"))
+
+data3 %>%
+  ggplot(aes(x = as.factor(good_loan), y = oltv, color = as.factor(good_loan))) +
+  geom_boxplot() +
+  ggtitle("Loan Success vs. OLTV") +
+  theme_minimal() +
+  labs(x = "", y = "Original Loan to Value Ratio") +
+  scale_color_discrete(name="Loan Success") +
+  ggeasy::easy_center_title()
+
+
+```
+
+```{r}
+data3%>%
+  ggplot(aes(x = as.factor(good_loan), y = ocltv, color = as.factor(good_loan))) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Loan Success vs. OCLTV", x = "Loan Type", y = "Original Combined Loan to Value Ratio (OCLTV)") +
+  scale_color_discrete(name="Loan Success") +
+  ggeasy::easy_center_title()
+  
+  
+```
+
+```{r}
+data3 %>% 
+  ggplot(aes(x = as.factor(good_loan), y = dti, color = as.factor(good_loan))) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Loan Success vs. DTI", x = "Loan Success", y = "Debt-To-Income (DTI)") +
+  scale_color_discrete(name="Loan Success") +
+  ggeasy::easy_center_title()
+  
+```
+
+
+```{r}
+data3 %>%
+  ggplot(aes(x = as.factor(good_loan), y = CSCORE_B, color = as.factor(good_loan))) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Loan Success vs. Borrower Credit Score at Origination", x = "Loan Success", y = "Borrower Credit Score at Origination") +
+  scale_color_discrete(name="Loan Success") +
+  ggeasy::easy_center_title()
+
+
 ```
 
 ```{r}
 data3 %>%
-  ggplot(aes(x = as.factor(good_loan), y = oltv, color = as.factor(good_loan))) +
-  geom_boxplot() +
-  theme_minimal() +
-  labs(title = "Loan Type", x = "", y = "oltv")
+  ggplot(mapping=aes(x=CSCORE_B, y=orig_amt))+
+  geom_point(color="skyblue3")+
+  facet_wrap(~LAST_STAT)
 ```
+
+```{r}
+data4.ave <- data3 %>%
+  group_by(SELLER) %>%
+  summarise(count=n(), ave=mean(orig_amt)) %>%
+  arrange(-ave) #arrange the company by their average
+
+data5.count <- data3 %>%
+  group_by(SELLER) %>%
+  summarise(count=n(), ave=mean(orig_amt)) %>%
+  arrange(-count) #arrange the company by how many mortgage they give
+
+data4.ave <- head(data4.ave, 10)
+data4.ave <- data4.ave[,c(1,3)]
+data5.count <- data5.count[2:11,] 
+
+knitr::kable(data4.ave,align="lr")
+
+knitr::kable(data5.count, align="lcr") 
+```
+
+
+
+
 
 
