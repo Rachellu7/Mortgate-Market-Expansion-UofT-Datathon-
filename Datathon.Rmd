@@ -169,26 +169,37 @@ data3 %>%
   ggplot(aes(x = as.factor(good_loan), y = mi_pct, color = as.factor(good_loan))) +
   geom_boxplot() +
   theme_minimal() +
-  labs(title = "Loan Success vs. Mortgage Insurance Percentage", x = "Mortgage Insurance Percentage", y = "Count") +
+  labs(title = "Loan Success vs. Mortgage Insurance Percentage", x = "", y = "Mortgage Insurance Percentage") +
   scale_color_discrete(name="Loan Success") +
   ggeasy::easy_center_title()
 ```
 
 ```{r LOAN SUCCESS vs. num_unit, warning=FALSE, message=FALSE}
 data3 %>%
-  ggplot(aes(x = as.factor(good_loan), y = log(NUM_UNIT), color = as.factor(good_loan))) +
+  ggplot(aes(x = as.factor(good_loan), y = NUM_UNIT, color = as.factor(good_loan))) +
   geom_boxplot() +
   theme_minimal() +
-  labs(title = "Loan Success vs. Number of Units", x = "Number of Units", y = "Count") +
+  labs(title = "Loan Success vs. Number of Units", x = " ", y = "Number of Units") +
   scale_color_discrete(name="Loan Success") +
   ggeasy::easy_center_title()
+
+# Or a barplot?: 
+data3 %>%
+  ggplot(aes(x=as.factor(good_loan), y=NUM_UNIT, fill=good_loan)) +  
+  geom_bar(stat="identity")+
+  theme_minimal() +
+  labs(title = "Loan Success vs. Number of Units", x = " ", y = "Number of Units") +
+  scale_fill_discrete(name="Loan Success") +
+  ggeasy::easy_center_title()
+
+# beanplot(NUM_UNIT~as.factor(good_loan), data=data3)
 ```
 
 ```{r LOAN SUCCESS & FTHB_FLAG}
-data3 %>% 
+data3[which(!is.na(data3$FTHB_FLG)),] %>% 
   group_by(FTHB_FLG,good_loan) %>% 
   summarise(count=n()) %>% 
-  ggplot(aes(fill = as.factor(good_loan), y = count, x = as.factor(FTHB_FLG))) +
+  ggplot(aes(fill = as.factor(good_loan), y=count, x = as.factor(FTHB_FLG))) +
   geom_bar(position="dodge",stat="identity") +
   theme_minimal() +
   labs(title = "Loan Success vs. First Time Home Buyers Flag", x = "First Time Home Buyers Flag", y = "Count") +
@@ -250,8 +261,10 @@ data3[!is.na(data3$mi_pct),] %>%
   ggplot(aes(x = as.factor(mi_pct), y = orig_amt)) +
   geom_boxplot(na.rm = TRUE) +
   theme_minimal() +
-  labs(title = "Original UPB vs. Mortgage Insurance Percentage", x = "Mortgage Insurance Percentage", y = "Original UPB")
+  labs(title = "Original UPB vs. Mortgage Insurance Percentage", x = "Mortgage Insurance Percentage", y = "Original UPB") +
   ggeasy::easy_center_title()
+
+beanplot(log(orig_amt)~as.factor(mi_pct), data=data3[!is.na(data3$mi_pct),], ll=0.01, col=c("#CAB2D6", "#33A02C", "#B2DF8A"), border="#CAB2D6")
 ```
 
 ```{r orig_amt vs. num_unit, warning=FALSE, message=FALSE}
@@ -265,7 +278,7 @@ data3 %>%
 ```
 
 ```{r orig_amt & FTHB_FLAG}
-data3 %>%
+data3[!is.na(data3$FTHB_FLG),] %>%
   ggplot(aes(x = as.factor(FTHB_FLG), y = orig_amt, color = as.factor(FTHB_FLG))) +
   geom_boxplot() +
   theme_minimal() +
