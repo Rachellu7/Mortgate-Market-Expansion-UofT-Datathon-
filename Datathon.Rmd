@@ -60,6 +60,9 @@ plot(x=data3$oltv, y=data3$ocltv)
 #model<- glm(good_loan ~ oltv + dti + CSCORE_B, data=data3, family=binomial(link="logit"))
 model2<- lme4::glmer(good_loan ~ oltv  + dti + CSCORE_B + FTHB_FLG + purpose + relo_flg + occ_stat + NUM_UNIT + orig_rt + (1|msa), data=data3,family=binomial(link="logit")) #too much correlation for oltv,ocltv and CSCORE_B,CSCORE_C
 summary(model2)
+
+
+
 ```
 
 For a one unit increase in oltv, the log odds of being good loan decreases by 0.0465
@@ -69,6 +72,16 @@ Having occ_state by p versus occ_state by others , changes the log odds of being
 ...
 P-values for rest variables all greater 0.05, they are not significant.
 
+$$
+\begin{aligned}
+  \operatorname{\widehat{good\_loan}}_{i}  &\sim \operatorname{Binomial}(n = 1, \operatorname{prob}_{\operatorname{good\_loan} = 1} = \widehat{P}) \\
+    \log\left[\frac{\hat{P}}{1 - \hat{P}} \right] &=7.04_{\alpha_{j[i]}} - 0.05_{\beta_{1}}(\operatorname{oltv}) - 0.02_{\beta_{2}}(\operatorname{dti}) + 0.02_{\beta_{3}}(\operatorname{CSCORE\_B})\ - 
+11.65_{\beta_{4}}(\operatorname{FTHB\_FLG}_{\operatorname{N}}) - \\
+&\quad 11.98_{\beta_{5}}(\operatorname{FTHB\_FLG}_{\operatorname{Y}}) + 0.57_{\beta_{6}}(\operatorname{purpose}_{\operatorname{P}}) + 0.18_{\beta_{7}}(\operatorname{purpose}_{\operatorname{R}})\ + 13.9_{\beta_{8}}(\operatorname{purpose}_{\operatorname{U}}) +\\ &\quad 0.92_{\beta_{9}}(\operatorname{relo\_flg}_{\operatorname{Y}}) + 1.1_{\beta_{10}}(\operatorname{occ\_stat}_{\operatorname{P}}) + 0.7_{\beta_{11}}(\operatorname{occ\_stat}_{\operatorname{S}})\ + 0.35_{\beta_{12}}(\operatorname{NUM\_UNIT}) - 0.03_{\beta_{13}}(\operatorname{orig\_rt}) \\
+    \alpha_{j}  &\sim N \left(0, 0.06 \right)
+    \text{, for msa j = 1,} \dots \text{,J}
+\end{aligned}
+$$
 
 ```{r}
 library(beanplot)
@@ -88,7 +101,6 @@ data3 %>%
 ```{r}
 data3 <- data3 %>%
   mutate(good_loan=ifelse(good_loan==0, "Failed", "Success"))
-
 data3 %>%
   ggplot(aes(x = as.factor(good_loan), y = oltv, color = as.factor(good_loan))) +
   geom_boxplot() +
@@ -155,7 +167,7 @@ data5.count <- data3 %>%
   summarise(count=n(), ave=mean(orig_amt)) %>%
   arrange(-count) #arrange the company by how many mortgage they give
 
-data4.ave <- head(data4.ave, 10)
+data4.ave <- head(data4.ave, 11)
 data4.ave <- data4.ave[,c(1,3)]
 data5.count <- data5.count[2:11,] 
 
@@ -264,7 +276,7 @@ data3[!is.na(data3$mi_pct),] %>%
   labs(title = "Original UPB vs. Mortgage Insurance Percentage", x = "Mortgage Insurance Percentage", y = "Original UPB") +
   ggeasy::easy_center_title()
 
-beanplot(log(orig_amt)~as.factor(mi_pct), data=data3[!is.na(data3$mi_pct),], ll=0.01, col=c("#CAB2D6", "#33A02C", "#B2DF8A"), border="#CAB2D6")
+beanplot(log(orig_amt)~as.factor(mi_pct), data=data3[!is.na(data3$mi_pct),], ll=0.01, col=c("#CAB2D6", "#33A02C", "#B2DF8A"), border="#CAB2D6", main="Beanplot of Mortgage Insurance Percentage vs. Original UPB", xlab="Mortgage Insurance Percentage", ylab="Original UPB (Logged Amount)")
 ```
 
 ```{r orig_amt vs. num_unit, warning=FALSE, message=FALSE}
