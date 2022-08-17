@@ -12,4 +12,4 @@ We want to analyze the given bank mortgage data of Illinois, Iowa, and Wisconsin
 * Market share analysis & feasibility (consider other competitors)
 
 # Output
-We utilized R, Python and Tableau to produce statistical analysis and data visualization for this case competition
+We utilized R, Python and Tableau to produce statistical analysis and data visualization for this case competition. The final presentation can be found [a link](https://github.com/Rachellu7/Mortgate-Market-Expansion-UofT-Datathon-/blob/main/Datathon%20TCG%20Presentation.pptx).
